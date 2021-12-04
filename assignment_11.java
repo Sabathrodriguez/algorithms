@@ -24,13 +24,9 @@ public class assignment_11 {
 }
 class TravellingSalesmanProblem {
 
-	// adjacency matrix representation of the G(V,E)
 	private int[][] graph;
-	// we have to track whether we have visited the given nodes
 	private boolean[] visited;
-	// we have to track the path (that may form a cycle)
 	private List<Integer> path;
-	// because we are after the MINIMUM hamiltonian cycle
 	private int min;
 
 	private Map<String, String> paths_taken = new TreeMap<>();
@@ -43,6 +39,10 @@ class TravellingSalesmanProblem {
 		initilaize(start);
 	}
 
+    /*
+     @args:
+        start: starting vertex
+     */
 	private void initilaize(int start) {
 		// start with vertex index 0
 		visited[start] = true;
@@ -50,9 +50,17 @@ class TravellingSalesmanProblem {
 		min = Integer.MAX_VALUE;
 	}
 
+    /*
+     @args:
+        vertex: is "vertex" a valid move:
+                * has it been visited?
+                * does it have an edge to actualPosition vertex?
+        actualPosition: current vertex in G
+     @returns: if vertex is a valid next vertex, then return true, if not then return false
+     */
 	private boolean isValid(int vertex, int actualPosition) {
 
-		// if the vertex is already been visited then it is not good
+		// has the vertex already been visited?
 		if(visited[vertex])
 			return false;
 
@@ -62,9 +70,16 @@ class TravellingSalesmanProblem {
 
 		return true;
 	}
-
+    
+    /*
+     @args:
+        actualPosition: current vertex in G
+        counter: number of vertices traversed in G
+        cost: total "cost" of trip from beginning to actualPosition
+     */
 	public void solve(int actualPosition, int counter, int cost) {
 
+        //if we've traversed the entire graph OR
 		if (counter == graph.length && graph[actualPosition][0] != 0) {
 			path.add(0);
 
@@ -75,13 +90,23 @@ class TravellingSalesmanProblem {
 			return;
 		}
 
+        //check every row in current column i.e. actualPosition
 		for (int i = 0; i < graph.length; ++i) {
+            //if we can traverse from actualPosition vertex to i'th vertex then continue
 			if (isValid(i, actualPosition) ) {
+                //mark visited array at i'th index (vertex) as visited
 				visited[i] = true;
+                //add vertex i to verteces visited
 				path.add(i);
+                //current cost (to get to current vertex) + cost of new vertex i
 				int temp_cost = cost + graph[actualPosition][i];
+                //memoization
 				paths_taken.put(actualPosition + "," + i, temp_cost + "");
-				solve(i, counter + 1, cost + graph[actualPosition][i]);
+				//recur and check next vertex:
+                    //actualVertex = i
+                    //counter += 1
+                    //cost = current cost (to get to current vertex) + cost of new vertex i
+                solve(i, counter + 1, cost + graph[actualPosition][i]);
 
 				//backgtracking
 				visited[i] = false;
@@ -89,7 +114,9 @@ class TravellingSalesmanProblem {
 			}
 		}
 	}
-
+    /*
+     @returns: min distance hamoltonian cycle
+     */
 	public int getDistance() {
 		return min;
 	}
